@@ -106,18 +106,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
         }}
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-24 md:h-32 py-1">
             {/* Logo */}
             <button
               type="button"
               onClick={() => scrollTo("#hero")}
-              className="flex items-center gap-3 flex-shrink-0"
+              className="flex items-center gap-3"
               aria-label="Yashraj Dance Studio - Home"
             >
               <img
                 src="/assets/yashraj-logo.png"
                 alt="Yashraj Dance Studio"
-                className="h-14 md:h-20 w-auto object-contain"
+                className="h-28 md:h-44 w-auto object-contain"
                 style={{ filter: "brightness(1.1)" }}
               />
             </button>
@@ -228,7 +228,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <img
                 src="/assets/yashraj-logo.png"
                 alt="Yashraj Dance Studio"
-                className="h-24 w-auto object-contain mb-4"
+                className="h-56 md:h-72 w-auto object-contain mb-4"
               />
               <p
                 className="text-sm leading-relaxed mb-4 max-w-xs"
@@ -364,17 +364,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <p className="text-xs" style={{ color: "#555" }}>
               © {new Date().getFullYear()} YASHRAJ DANCE STUDIO. All rights
               reserved.
-            </p>
-            <p className="text-xs" style={{ color: "#555" }}>
-              Built with love using{" "}
-              <a
-                href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(typeof window !== "undefined" ? window.location.hostname : "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition-smooth caffeine-link"
-              >
-                caffeine.ai
-              </a>
             </p>
           </div>
         </div>
