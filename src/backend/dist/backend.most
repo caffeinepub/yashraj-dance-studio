@@ -1,4 +1,46 @@
 // Version: 1.0.0
+type EnquiryId__100513705 = Nat;
+type EnquiryId__765337912 = EnquiryId__100513705;
+type Enquiry__582474784 =
+  {
+    classInterest : Text;
+    email : Text;
+    id : EnquiryId__765337912;
+    message : Text;
+    name : Text;
+    phone : Text;
+    submittedAt : Timestamp__332338714
+  };
+type List__415060402<T> = List__790383201<T>;
+type List__790383201<T> =
+  {
+    var blockIndex : Nat__490723111;
+    var blocks : [var [var ?T]];
+    var elementIndex : Nat__490723111
+  };
+type Nat__490723111 = Nat__920180692;
+type Nat__920180692 = Nat;
+type PhotoId__38188305 = Nat;
+type PhotoId__77290583 = PhotoId__38188305;
+type PhotoMeta__542982725 =
+  {
+    displayOrder : Nat;
+    filename : Text;
+    id : PhotoId__77290583;
+    section : PhotoSection__309446342;
+    storageRef : Text;
+    uploadedAt : Timestamp__222648073
+  };
+type PhotoSection__1066634049 =
+  {#facilities; #gallery; #hero; #services; #testimonials};
+type PhotoSection__309446342 = PhotoSection__1066634049;
+type Timestamp__222648073 = Timestamp__301639476;
+type Timestamp__301639476 = Int;
+type Timestamp__332338714 = Timestamp__301639476;
 actor {
-  
+  stable adminState : {var adminToken : Text};
+  stable enquiryState :
+    {enquiries : List__415060402<Enquiry__582474784>; var nextId : Nat};
+  stable photoState :
+    {var nextId : Nat; photos : List__415060402<PhotoMeta__542982725>}
 };

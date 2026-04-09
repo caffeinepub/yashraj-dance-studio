@@ -1,41 +1,68 @@
+import type { PhotoMeta } from "@/backend";
+import { getPhotoUrl, useTestimonialsPhotos } from "@/hooks/useQueries";
 import { Quote, Star } from "lucide-react";
+import { useState } from "react";
 
 interface Review {
   id: string;
+  name: string;
   title: string;
   comment: string;
+  initials: string;
+  gradientFrom: string;
+  gradientTo: string;
 }
 
 const REVIEWS: Review[] = [
   {
     id: "r1",
+    name: "Priya M.",
     title: "Amazing experience!",
     comment:
       "I joined for wedding choreography and it turned out better than I imagined. The steps were simple, elegant, and easy to learn even for beginners. Highly recommend!",
+    initials: "PM",
+    gradientFrom: "#00bcd4",
+    gradientTo: "#7c3aed",
   },
   {
     id: "r2",
+    name: "Rahul S.",
     title: "Supportive and hardworking trainer",
     comment:
       "The trainer is extremely dedicated and makes sure everyone understands the steps. You never feel left out in the class.",
+    initials: "RS",
+    gradientFrom: "#7c3aed",
+    gradientTo: "#00bcd4",
   },
   {
     id: "r3",
+    name: "Sneha K.",
     title: "Perfect for beginners",
     comment:
       "I had zero dance experience, but the way everything is taught step-by-step made it super easy to follow. Now I actually enjoy dancing!",
+    initials: "SK",
+    gradientFrom: "#00bcd4",
+    gradientTo: "#0f766e",
   },
   {
     id: "r4",
+    name: "Anjali D.",
     title: "Fun + fitness together",
     comment:
       "Zumba sessions are full of energy. It doesn't feel like a workout, but you still burn calories and feel great after every class.",
+    initials: "AD",
+    gradientFrom: "#7c3aed",
+    gradientTo: "#db2777",
   },
   {
     id: "r5",
+    name: "Meera T.",
     title: "Great for kids too",
     comment:
       "My child attends the classes and absolutely loves them. The environment is friendly and encouraging.",
+    initials: "MT",
+    gradientFrom: "#00bcd4",
+    gradientTo: "#7c3aed",
   },
 ];
 
@@ -49,29 +76,69 @@ function StarRow({ size = 14 }: { size?: number }) {
   );
 }
 
-function ReviewCard({ review }: { review: Review }) {
+function InitialsAvatar({ review }: { review: Review }) {
+  return (
+    <div
+      className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-bold"
+      style={{
+        background: `linear-gradient(135deg, ${review.gradientFrom}, ${review.gradientTo})`,
+        color: "#ffffff",
+      }}
+      aria-hidden="true"
+    >
+      {review.initials}
+    </div>
+  );
+}
+
+function PhotoAvatar({
+  photo,
+  review,
+}: {
+  photo: PhotoMeta;
+  review: Review;
+}) {
+  const [imgError, setImgError] = useState(false);
+
+  if (imgError) {
+    return <InitialsAvatar review={review} />;
+  }
+
+  return (
+    <img
+      src={getPhotoUrl(photo.storageRef)}
+      alt={`${review.name} avatar`}
+      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+      style={{ border: "2px solid rgba(0,188,212,0.3)" }}
+      onError={() => setImgError(true)}
+    />
+  );
+}
+
+function ReviewCard({
+  review,
+  avatarPhoto,
+}: {
+  review: Review;
+  avatarPhoto?: PhotoMeta;
+}) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <div
       className="rounded-2xl p-6 flex flex-col gap-4 transition-smooth h-full"
       style={{
         backgroundColor: "#111111",
-        border: "1px solid rgba(124,58,237,0.25)",
-        boxShadow:
-          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+        border: hovered
+          ? "1px solid rgba(0,188,212,0.4)"
+          : "1px solid rgba(124,58,237,0.25)",
+        boxShadow: hovered
+          ? "0 4px 32px rgba(0,0,0,0.6), 0 0 24px rgba(0,188,212,0.1), inset 0 1px 0 rgba(255,255,255,0.06)"
+          : "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       data-ocid="review-card"
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.border =
-          "1px solid rgba(0,188,212,0.4)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow =
-          "0 4px 32px rgba(0,0,0,0.6), 0 0 24px rgba(0,188,212,0.1), inset 0 1px 0 rgba(255,255,255,0.06)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.border =
-          "1px solid rgba(124,58,237,0.25)";
-        (e.currentTarget as HTMLDivElement).style.boxShadow =
-          "0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)";
-      }}
     >
       {/* Quote icon */}
       <Quote
@@ -90,17 +157,29 @@ function ReviewCard({ review }: { review: Review }) {
         &ldquo;{review.comment}&rdquo;
       </p>
 
-      {/* Footer: title + stars */}
+      {/* Footer: avatar + name + stars */}
       <div
-        className="pt-4 flex items-center justify-between gap-2"
+        className="pt-4 flex items-center justify-between gap-3"
         style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
       >
-        <span
-          className="font-bold text-sm leading-snug"
-          style={{ color: "#ffffff" }}
-        >
-          {review.title}
-        </span>
+        <div className="flex items-center gap-3 min-w-0">
+          {avatarPhoto ? (
+            <PhotoAvatar photo={avatarPhoto} review={review} />
+          ) : (
+            <InitialsAvatar review={review} />
+          )}
+          <div className="min-w-0">
+            <span
+              className="block font-bold text-sm leading-snug truncate"
+              style={{ color: "#ffffff" }}
+            >
+              {review.name}
+            </span>
+            <span className="block text-xs truncate" style={{ color: "#666" }}>
+              {review.title}
+            </span>
+          </div>
+        </div>
         <StarRow size={13} />
       </div>
     </div>
@@ -108,8 +187,18 @@ function ReviewCard({ review }: { review: Review }) {
 }
 
 export default function TestimonialsSection() {
+  const { data: avatarPhotos } = useTestimonialsPhotos();
+
   const firstRow = REVIEWS.slice(0, 3);
   const secondRow = REVIEWS.slice(3);
+
+  function getAvatarForReview(review: Review): PhotoMeta | undefined {
+    if (!avatarPhotos || avatarPhotos.length === 0) return undefined;
+    const idx = REVIEWS.findIndex((r) => r.id === review.id);
+    return (
+      avatarPhotos.find((p) => Number(p.displayOrder) === idx + 1) ?? undefined
+    );
+  }
 
   return (
     <section
@@ -216,7 +305,11 @@ export default function TestimonialsSection() {
         {/* First row: 3 cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
           {firstRow.map((review) => (
-            <ReviewCard key={review.id} review={review} />
+            <ReviewCard
+              key={review.id}
+              review={review}
+              avatarPhoto={getAvatarForReview(review)}
+            />
           ))}
         </div>
 
@@ -224,7 +317,10 @@ export default function TestimonialsSection() {
         <div className="flex flex-col md:flex-row justify-center gap-6 md:max-w-2xl lg:max-w-3xl mx-auto">
           {secondRow.map((review) => (
             <div key={review.id} className="flex-1 md:max-w-sm lg:max-w-md">
-              <ReviewCard review={review} />
+              <ReviewCard
+                review={review}
+                avatarPhoto={getAvatarForReview(review)}
+              />
             </div>
           ))}
         </div>

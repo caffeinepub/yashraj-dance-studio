@@ -8,10 +8,126 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
-export const idlService = IDL.Service({});
+export const PhotoSection = IDL.Variant({
+  'hero' : IDL.Null,
+  'facilities' : IDL.Null,
+  'testimonials' : IDL.Null,
+  'services' : IDL.Null,
+  'gallery' : IDL.Null,
+});
+export const PhotoMetaInput = IDL.Record({
+  'displayOrder' : IDL.Nat,
+  'section' : PhotoSection,
+  'filename' : IDL.Text,
+  'storageRef' : IDL.Text,
+});
+export const PhotoId = IDL.Nat;
+export const Timestamp = IDL.Int;
+export const PhotoMeta = IDL.Record({
+  'id' : PhotoId,
+  'displayOrder' : IDL.Nat,
+  'section' : PhotoSection,
+  'filename' : IDL.Text,
+  'storageRef' : IDL.Text,
+  'uploadedAt' : Timestamp,
+});
+export const LoginResult = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
+export const EnquiryId = IDL.Nat;
+export const Enquiry = IDL.Record({
+  'id' : EnquiryId,
+  'name' : IDL.Text,
+  'submittedAt' : Timestamp,
+  'email' : IDL.Text,
+  'message' : IDL.Text,
+  'classInterest' : IDL.Text,
+  'phone' : IDL.Text,
+});
+export const EnquiryInput = IDL.Record({
+  'name' : IDL.Text,
+  'email' : IDL.Text,
+  'message' : IDL.Text,
+  'classInterest' : IDL.Text,
+  'phone' : IDL.Text,
+});
+
+export const idlService = IDL.Service({
+  'addPhotoMeta' : IDL.Func([PhotoMetaInput, IDL.Text], [PhotoMeta], []),
+  'adminLogin' : IDL.Func([IDL.Text, IDL.Text], [LoginResult], []),
+  'deletePhoto' : IDL.Func([PhotoId, IDL.Text], [IDL.Bool], []),
+  'getEnquiry' : IDL.Func([EnquiryId, IDL.Text], [IDL.Opt(Enquiry)], []),
+  'listAllPhotos' : IDL.Func([], [IDL.Vec(PhotoMeta)], ['query']),
+  'listEnquiries' : IDL.Func([IDL.Text], [IDL.Vec(Enquiry)], []),
+  'listPhotosBySection' : IDL.Func(
+      [PhotoSection],
+      [IDL.Vec(PhotoMeta)],
+      ['query'],
+    ),
+  'submitEnquiry' : IDL.Func([EnquiryInput], [Enquiry], []),
+  'updatePhotoOrder' : IDL.Func([PhotoId, IDL.Nat, IDL.Text], [IDL.Bool], []),
+  'validateAdminToken' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+});
 
 export const idlInitArgs = [];
 
-export const idlFactory = ({ IDL }) => { return IDL.Service({}); };
+export const idlFactory = ({ IDL }) => {
+  const PhotoSection = IDL.Variant({
+    'hero' : IDL.Null,
+    'facilities' : IDL.Null,
+    'testimonials' : IDL.Null,
+    'services' : IDL.Null,
+    'gallery' : IDL.Null,
+  });
+  const PhotoMetaInput = IDL.Record({
+    'displayOrder' : IDL.Nat,
+    'section' : PhotoSection,
+    'filename' : IDL.Text,
+    'storageRef' : IDL.Text,
+  });
+  const PhotoId = IDL.Nat;
+  const Timestamp = IDL.Int;
+  const PhotoMeta = IDL.Record({
+    'id' : PhotoId,
+    'displayOrder' : IDL.Nat,
+    'section' : PhotoSection,
+    'filename' : IDL.Text,
+    'storageRef' : IDL.Text,
+    'uploadedAt' : Timestamp,
+  });
+  const LoginResult = IDL.Variant({ 'ok' : IDL.Text, 'err' : IDL.Text });
+  const EnquiryId = IDL.Nat;
+  const Enquiry = IDL.Record({
+    'id' : EnquiryId,
+    'name' : IDL.Text,
+    'submittedAt' : Timestamp,
+    'email' : IDL.Text,
+    'message' : IDL.Text,
+    'classInterest' : IDL.Text,
+    'phone' : IDL.Text,
+  });
+  const EnquiryInput = IDL.Record({
+    'name' : IDL.Text,
+    'email' : IDL.Text,
+    'message' : IDL.Text,
+    'classInterest' : IDL.Text,
+    'phone' : IDL.Text,
+  });
+  
+  return IDL.Service({
+    'addPhotoMeta' : IDL.Func([PhotoMetaInput, IDL.Text], [PhotoMeta], []),
+    'adminLogin' : IDL.Func([IDL.Text, IDL.Text], [LoginResult], []),
+    'deletePhoto' : IDL.Func([PhotoId, IDL.Text], [IDL.Bool], []),
+    'getEnquiry' : IDL.Func([EnquiryId, IDL.Text], [IDL.Opt(Enquiry)], []),
+    'listAllPhotos' : IDL.Func([], [IDL.Vec(PhotoMeta)], ['query']),
+    'listEnquiries' : IDL.Func([IDL.Text], [IDL.Vec(Enquiry)], []),
+    'listPhotosBySection' : IDL.Func(
+        [PhotoSection],
+        [IDL.Vec(PhotoMeta)],
+        ['query'],
+      ),
+    'submitEnquiry' : IDL.Func([EnquiryInput], [Enquiry], []),
+    'updatePhotoOrder' : IDL.Func([PhotoId, IDL.Nat, IDL.Text], [IDL.Bool], []),
+    'validateAdminToken' : IDL.Func([IDL.Text], [IDL.Bool], ['query']),
+  });
+};
 
 export const init = ({ IDL }) => { return []; };

@@ -1,6 +1,15 @@
+import {
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
 import { Layout } from "./components/Layout";
+import AdminLoginPage from "./pages/AdminLoginPage";
+import AdminPage from "./pages/AdminPage";
 import AboutSection from "./sections/AboutSection";
 import ContactSection from "./sections/ContactSection";
+import EnquirySection from "./sections/EnquirySection";
 import FAQSection from "./sections/FAQSection";
 import FacilitiesSection from "./sections/FacilitiesSection";
 import FinalCTASection from "./sections/FinalCTASection";
@@ -12,7 +21,7 @@ import TeachingApproachSection from "./sections/TeachingApproachSection";
 import TestimonialsSection from "./sections/TestimonialsSection";
 import WhoItsForSection from "./sections/WhoItsForSection";
 
-export default function App() {
+function HomePage() {
   return (
     <Layout>
       <HeroSection />
@@ -24,9 +33,44 @@ export default function App() {
       <FacilitiesSection />
       <GallerySection />
       <TestimonialsSection />
-      <FAQSection />
+      <EnquirySection />
       <ContactSection />
+      <FAQSection />
       <FinalCTASection />
     </Layout>
   );
+}
+
+const rootRoute = createRootRoute();
+
+const homeRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: HomePage,
+});
+
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin",
+  component: AdminPage,
+});
+
+const adminLoginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin-login",
+  component: AdminLoginPage,
+});
+
+const router = createRouter({
+  routeTree: rootRoute.addChildren([homeRoute, adminRoute, adminLoginRoute]),
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+export default function App() {
+  return <RouterProvider router={router} />;
 }

@@ -43,3 +43,18 @@ export interface NavLink {
   label: string;
   href: string;
 }
+
+// New interfaces for enquiry, photo management, and admin
+
+export interface EnquiryFormData {
+  name: string;
+  phone: string;
+  email: string;
+  classInterest: string;
+  message: string;
+}
+
+export interface AdminSession {
+  token: string;
+  isLoggedIn: boolean;
+}

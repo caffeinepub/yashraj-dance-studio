@@ -10,7 +10,58 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
-export interface _SERVICE {}
+export interface Enquiry {
+  'id' : EnquiryId,
+  'name' : string,
+  'submittedAt' : Timestamp,
+  'email' : string,
+  'message' : string,
+  'classInterest' : string,
+  'phone' : string,
+}
+export type EnquiryId = bigint;
+export interface EnquiryInput {
+  'name' : string,
+  'email' : string,
+  'message' : string,
+  'classInterest' : string,
+  'phone' : string,
+}
+export type LoginResult = { 'ok' : string } |
+  { 'err' : string };
+export type PhotoId = bigint;
+export interface PhotoMeta {
+  'id' : PhotoId,
+  'displayOrder' : bigint,
+  'section' : PhotoSection,
+  'filename' : string,
+  'storageRef' : string,
+  'uploadedAt' : Timestamp,
+}
+export interface PhotoMetaInput {
+  'displayOrder' : bigint,
+  'section' : PhotoSection,
+  'filename' : string,
+  'storageRef' : string,
+}
+export type PhotoSection = { 'hero' : null } |
+  { 'facilities' : null } |
+  { 'testimonials' : null } |
+  { 'services' : null } |
+  { 'gallery' : null };
+export type Timestamp = bigint;
+export interface _SERVICE {
+  'addPhotoMeta' : ActorMethod<[PhotoMetaInput, string], PhotoMeta>,
+  'adminLogin' : ActorMethod<[string, string], LoginResult>,
+  'deletePhoto' : ActorMethod<[PhotoId, string], boolean>,
+  'getEnquiry' : ActorMethod<[EnquiryId, string], [] | [Enquiry]>,
+  'listAllPhotos' : ActorMethod<[], Array<PhotoMeta>>,
+  'listEnquiries' : ActorMethod<[string], Array<Enquiry>>,
+  'listPhotosBySection' : ActorMethod<[PhotoSection], Array<PhotoMeta>>,
+  'submitEnquiry' : ActorMethod<[EnquiryInput], Enquiry>,
+  'updatePhotoOrder' : ActorMethod<[PhotoId, bigint, string], boolean>,
+  'validateAdminToken' : ActorMethod<[string], boolean>,
+}
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];
 export declare const idlFactory: IDL.InterfaceFactory;

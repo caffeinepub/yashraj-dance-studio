@@ -1,3 +1,6 @@
+import type { PhotoMeta } from "@/backend";
+import { getPhotoUrl, useServicesPhotos } from "@/hooks/useQueries";
+
 interface ServiceData {
   id: string;
   emoji: string;
@@ -6,7 +9,7 @@ interface ServiceData {
   highlights: string[];
   badge: string;
   accent: "cyan" | "purple" | "gradient";
-  image: string;
+  fallbackImage: string;
 }
 
 const SERVICES: ServiceData[] = [
@@ -24,7 +27,7 @@ const SERVICES: ServiceData[] = [
     ],
     badge: "All Levels",
     accent: "gradient",
-    image: "/assets/generated/studio-interior.dim_1200x800.jpg",
+    fallbackImage: "/assets/generated/studio-interior.dim_1200x800.jpg",
   },
   {
     id: "zumba",
@@ -40,7 +43,7 @@ const SERVICES: ServiceData[] = [
     ],
     badge: "All Levels",
     accent: "cyan",
-    image: "/assets/generated/aero-dance.dim_800x600.jpg",
+    fallbackImage: "/assets/generated/aero-dance.dim_800x600.jpg",
   },
   {
     id: "yoga",
@@ -56,7 +59,7 @@ const SERVICES: ServiceData[] = [
     ],
     badge: "All Levels",
     accent: "purple",
-    image: "/assets/generated/classical-dance.dim_800x600.jpg",
+    fallbackImage: "/assets/generated/classical-dance.dim_800x600.jpg",
   },
   {
     id: "wedding",
@@ -72,7 +75,7 @@ const SERVICES: ServiceData[] = [
     ],
     badge: "All Levels",
     accent: "gradient",
-    image: "/assets/generated/bollywood-dance.dim_800x600.jpg",
+    fallbackImage: "/assets/generated/bollywood-dance.dim_800x600.jpg",
   },
   {
     id: "kids",
@@ -88,7 +91,7 @@ const SERVICES: ServiceData[] = [
     ],
     badge: "Beginner",
     accent: "cyan",
-    image: "/assets/generated/bollywood-dance.dim_800x600.jpg",
+    fallbackImage: "/assets/generated/bollywood-dance.dim_800x600.jpg",
   },
 ];
 
@@ -119,9 +122,33 @@ const badgeMap: Record<string, { bg: string; color: string }> = {
   Beginner: { bg: "rgba(52,211,153,0.12)", color: "#34d399" },
 };
 
-function ServiceCard({ service }: { service: ServiceData }) {
+/** Find the best matching photo for a service by filename keywords */
+function findServicePhoto(
+  serviceId: string,
+  photos: PhotoMeta[],
+): PhotoMeta | undefined {
+  const keyword = serviceId.toLowerCase();
+  return (
+    photos.find((p) => p.filename.toLowerCase().includes(keyword)) ??
+    photos.find(
+      (p) =>
+        Number(p.displayOrder) ===
+        SERVICES.findIndex((s) => s.id === serviceId) + 1,
+    ) ??
+    undefined
+  );
+}
+
+function ServiceCard({
+  service,
+  photoUrl,
+}: {
+  service: ServiceData;
+  photoUrl?: string;
+}) {
   const accent = accentMap[service.accent];
   const badge = badgeMap[service.badge] ?? badgeMap["All Levels"];
+  const imageSrc = photoUrl ?? service.fallbackImage;
 
   return (
     <div
@@ -136,7 +163,7 @@ function ServiceCard({ service }: { service: ServiceData }) {
       {/* Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "16/9" }}>
         <img
-          src={service.image}
+          src={imageSrc}
           alt={service.title}
           className="w-full h-full object-cover transition-smooth group-hover:scale-105"
         />
@@ -219,6 +246,8 @@ function ServiceCard({ service }: { service: ServiceData }) {
 }
 
 export default function ServicesSection() {
+  const { data: servicePhotos } = useServicesPhotos();
+
   return (
     <section
       id="services"
@@ -257,9 +286,18 @@ export default function ServicesSection() {
 
         {/* Grid — 3-col lg layout for 5 cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {SERVICES.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
+          {SERVICES.map((service) => {
+            const match = servicePhotos
+              ? findServicePhoto(service.id, servicePhotos)
+              : undefined;
+            return (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                photoUrl={match ? getPhotoUrl(match.storageRef) : undefined}
+              />
+            );
+          })}
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+import { getPhotoUrl, useHeroPhotos } from "@/hooks/useQueries";
 import { ChevronDown, Star } from "lucide-react";
 
 function scrollTo(id: string) {
@@ -11,7 +12,16 @@ const STATS = [
   { value: "Morning & Evening", label: "Batches" },
 ];
 
+const FALLBACK_BG = "url('/assets/generated/hero-dance.dim_1920x1080.jpg')";
+
 export default function HeroSection() {
+  const { data: heroPhotos } = useHeroPhotos();
+
+  const heroPhoto = heroPhotos && heroPhotos.length > 0 ? heroPhotos[0] : null;
+  const bgImage = heroPhoto
+    ? `url('${getPhotoUrl(heroPhoto.storageRef)}')`
+    : FALLBACK_BG;
+
   return (
     <section
       id="hero"
@@ -20,10 +30,9 @@ export default function HeroSection() {
     >
       {/* Background image */}
       <div
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 transition-smooth"
         style={{
-          backgroundImage:
-            "url('/assets/generated/hero-dance.dim_1920x1080.jpg')",
+          backgroundImage: bgImage,
           backgroundSize: "cover",
           backgroundPosition: "center top",
           backgroundRepeat: "no-repeat",

@@ -1,2 +1,62 @@
+type Timestamp = int;
+type PhotoSection = 
+ variant {
+   facilities;
+   gallery;
+   hero;
+   services;
+   testimonials;
+ };
+type PhotoMetaInput = 
+ record {
+   displayOrder: nat;
+   filename: text;
+   section: PhotoSection;
+   storageRef: text;
+ };
+type PhotoMeta = 
+ record {
+   displayOrder: nat;
+   filename: text;
+   id: PhotoId;
+   section: PhotoSection;
+   storageRef: text;
+   uploadedAt: Timestamp;
+ };
+type PhotoId = nat;
+type LoginResult = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type EnquiryInput = 
+ record {
+   classInterest: text;
+   email: text;
+   message: text;
+   name: text;
+   phone: text;
+ };
+type EnquiryId = nat;
+type Enquiry = 
+ record {
+   classInterest: text;
+   email: text;
+   id: EnquiryId;
+   message: text;
+   name: text;
+   phone: text;
+   submittedAt: Timestamp;
+ };
 service : {
+  addPhotoMeta: (input: PhotoMetaInput, token: text) -> (PhotoMeta);
+  adminLogin: (username: text, password: text) -> (LoginResult);
+  deletePhoto: (id: PhotoId, token: text) -> (bool);
+  getEnquiry: (id: EnquiryId, token: text) -> (opt Enquiry);
+  listAllPhotos: () -> (vec PhotoMeta) query;
+  listEnquiries: (token: text) -> (vec Enquiry);
+  listPhotosBySection: (section: PhotoSection) -> (vec PhotoMeta) query;
+  submitEnquiry: (input: EnquiryInput) -> (Enquiry);
+  updatePhotoOrder: (id: PhotoId, newOrder: nat, token: text) -> (bool);
+  validateAdminToken: (token: text) -> (bool) query;
 }

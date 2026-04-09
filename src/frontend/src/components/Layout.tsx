@@ -24,6 +24,11 @@ const FOOTER_LINKS: NavLink[] = [
   { label: "Contact", href: "#contact" },
 ];
 
+const STUDIO_HOURS = [
+  { day: "Monday – Saturday", time: "7:00 AM – 9:00 PM" },
+  { day: "Sunday", time: "9:00 AM – 1:00 PM" },
+];
+
 function scrollTo(href: string) {
   const id = href.replace("#", "");
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -49,7 +54,7 @@ function InstagramIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-function WhatsAppIcon({ size = 18 }: { size?: number }) {
+function WhatsAppIcon({ size = 20 }: { size?: number }) {
   return (
     <svg
       width={size}
@@ -77,6 +82,78 @@ const SOCIAL_LINKS = [
     Icon: WhatsAppIcon,
   },
 ];
+
+function WhatsAppWidget() {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <div
+      className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2"
+      data-ocid="whatsapp-widget"
+    >
+      {/* Business Hours Tooltip */}
+      {showTooltip && (
+        <div
+          className="mb-1 rounded-xl px-4 py-3 text-sm shadow-lg"
+          style={{
+            background: "#111111",
+            border: "1px solid #1f1f1f",
+            minWidth: "220px",
+          }}
+          role="tooltip"
+          id="whatsapp-hours-tooltip"
+        >
+          <p
+            className="text-xs font-semibold uppercase tracking-wider mb-2"
+            style={{ color: "#00bcd4" }}
+          >
+            Studio Hours
+          </p>
+          {STUDIO_HOURS.map(({ day, time }) => (
+            <div key={day} className="flex flex-col mb-1 last:mb-0">
+              <span
+                className="text-xs font-medium"
+                style={{ color: "#ffffff" }}
+              >
+                {day}
+              </span>
+              <span className="text-xs" style={{ color: "#a0a0a0" }}>
+                {time}
+              </span>
+            </div>
+          ))}
+          <p
+            className="text-xs mt-2 pt-2"
+            style={{ color: "#555", borderTop: "1px solid #1f1f1f" }}
+          >
+            Tap to chat on WhatsApp
+          </p>
+        </div>
+      )}
+
+      {/* WhatsApp Button */}
+      <a
+        href="https://wa.me/919145793569"
+        target="_blank"
+        rel="noopener noreferrer"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+        onFocus={() => setShowTooltip(true)}
+        onBlur={() => setShowTooltip(false)}
+        className="flex items-center justify-center w-14 h-14 rounded-full shadow-xl transition-smooth"
+        style={{
+          background: "linear-gradient(135deg, #25d366, #128c7e)",
+          color: "#ffffff",
+        }}
+        aria-label="Chat on WhatsApp — Mon-Sat: 7AM-9PM, Sun: 9AM-1PM"
+        aria-describedby="whatsapp-hours-tooltip"
+        data-ocid="whatsapp-btn"
+      >
+        <WhatsAppIcon size={26} />
+      </a>
+    </div>
+  );
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -216,6 +293,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main className="flex-1">{children}</main>
 
+      {/* WhatsApp Floating Widget */}
+      <WhatsAppWidget />
+
       {/* Footer */}
       <footer
         style={{ backgroundColor: "#0d0d0d", borderTop: "1px solid #1f1f1f" }}
@@ -333,9 +413,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   >
                     Hours
                   </span>
-                  Morning &amp; Evening Batches
+                  Mon–Sat: 7 AM – 9 PM
                   <br />
-                  Open till ~9 PM
+                  Sun: 9 AM – 1 PM
                 </li>
                 <li>
                   <a

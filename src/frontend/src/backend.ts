@@ -89,10 +89,326 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface backendInterface {
+export type Timestamp = bigint;
+export type PhotoId = bigint;
+export interface EnquiryInput {
+    name: string;
+    email: string;
+    message: string;
+    classInterest: string;
+    phone: string;
 }
+export interface PhotoMetaInput {
+    displayOrder: bigint;
+    section: PhotoSection;
+    filename: string;
+    storageRef: string;
+}
+export type LoginResult = {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: string;
+};
+export interface PhotoMeta {
+    id: PhotoId;
+    displayOrder: bigint;
+    section: PhotoSection;
+    filename: string;
+    storageRef: string;
+    uploadedAt: Timestamp;
+}
+export interface Enquiry {
+    id: EnquiryId;
+    name: string;
+    submittedAt: Timestamp;
+    email: string;
+    message: string;
+    classInterest: string;
+    phone: string;
+}
+export type EnquiryId = bigint;
+export enum PhotoSection {
+    hero = "hero",
+    facilities = "facilities",
+    testimonials = "testimonials",
+    services = "services",
+    gallery = "gallery"
+}
+export interface backendInterface {
+    addPhotoMeta(input: PhotoMetaInput, token: string): Promise<PhotoMeta>;
+    adminLogin(username: string, password: string): Promise<LoginResult>;
+    deletePhoto(id: PhotoId, token: string): Promise<boolean>;
+    getEnquiry(id: EnquiryId, token: string): Promise<Enquiry | null>;
+    listAllPhotos(): Promise<Array<PhotoMeta>>;
+    listEnquiries(token: string): Promise<Array<Enquiry>>;
+    listPhotosBySection(section: PhotoSection): Promise<Array<PhotoMeta>>;
+    submitEnquiry(input: EnquiryInput): Promise<Enquiry>;
+    updatePhotoOrder(id: PhotoId, newOrder: bigint, token: string): Promise<boolean>;
+    validateAdminToken(token: string): Promise<boolean>;
+}
+import type { Enquiry as _Enquiry, LoginResult as _LoginResult, PhotoId as _PhotoId, PhotoMeta as _PhotoMeta, PhotoMetaInput as _PhotoMetaInput, PhotoSection as _PhotoSection, Timestamp as _Timestamp } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
+    async addPhotoMeta(arg0: PhotoMetaInput, arg1: string): Promise<PhotoMeta> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addPhotoMeta(to_candid_PhotoMetaInput_n1(this._uploadFile, this._downloadFile, arg0), arg1);
+                return from_candid_PhotoMeta_n5(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addPhotoMeta(to_candid_PhotoMetaInput_n1(this._uploadFile, this._downloadFile, arg0), arg1);
+            return from_candid_PhotoMeta_n5(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async adminLogin(arg0: string, arg1: string): Promise<LoginResult> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.adminLogin(arg0, arg1);
+                return from_candid_LoginResult_n9(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.adminLogin(arg0, arg1);
+            return from_candid_LoginResult_n9(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async deletePhoto(arg0: PhotoId, arg1: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deletePhoto(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deletePhoto(arg0, arg1);
+            return result;
+        }
+    }
+    async getEnquiry(arg0: EnquiryId, arg1: string): Promise<Enquiry | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getEnquiry(arg0, arg1);
+                return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getEnquiry(arg0, arg1);
+            return from_candid_opt_n11(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async listAllPhotos(): Promise<Array<PhotoMeta>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listAllPhotos();
+                return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listAllPhotos();
+            return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async listEnquiries(arg0: string): Promise<Array<Enquiry>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listEnquiries(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listEnquiries(arg0);
+            return result;
+        }
+    }
+    async listPhotosBySection(arg0: PhotoSection): Promise<Array<PhotoMeta>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.listPhotosBySection(to_candid_PhotoSection_n3(this._uploadFile, this._downloadFile, arg0));
+                return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.listPhotosBySection(to_candid_PhotoSection_n3(this._uploadFile, this._downloadFile, arg0));
+            return from_candid_vec_n12(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async submitEnquiry(arg0: EnquiryInput): Promise<Enquiry> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.submitEnquiry(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.submitEnquiry(arg0);
+            return result;
+        }
+    }
+    async updatePhotoOrder(arg0: PhotoId, arg1: bigint, arg2: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updatePhotoOrder(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updatePhotoOrder(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async validateAdminToken(arg0: string): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.validateAdminToken(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.validateAdminToken(arg0);
+            return result;
+        }
+    }
+}
+function from_candid_LoginResult_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _LoginResult): LoginResult {
+    return from_candid_variant_n10(_uploadFile, _downloadFile, value);
+}
+function from_candid_PhotoMeta_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PhotoMeta): PhotoMeta {
+    return from_candid_record_n6(_uploadFile, _downloadFile, value);
+}
+function from_candid_PhotoSection_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _PhotoSection): PhotoSection {
+    return from_candid_variant_n8(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Enquiry]): Enquiry | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: _PhotoId;
+    displayOrder: bigint;
+    section: _PhotoSection;
+    filename: string;
+    storageRef: string;
+    uploadedAt: _Timestamp;
+}): {
+    id: PhotoId;
+    displayOrder: bigint;
+    section: PhotoSection;
+    filename: string;
+    storageRef: string;
+    uploadedAt: Timestamp;
+} {
+    return {
+        id: value.id,
+        displayOrder: value.displayOrder,
+        section: from_candid_PhotoSection_n7(_uploadFile, _downloadFile, value.section),
+        filename: value.filename,
+        storageRef: value.storageRef,
+        uploadedAt: value.uploadedAt
+    };
+}
+function from_candid_variant_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    ok: string;
+} | {
+    err: string;
+}): {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: string;
+} {
+    return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+    } : "err" in value ? {
+        __kind__: "err",
+        err: value.err
+    } : value;
+}
+function from_candid_variant_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    hero: null;
+} | {
+    facilities: null;
+} | {
+    testimonials: null;
+} | {
+    services: null;
+} | {
+    gallery: null;
+}): PhotoSection {
+    return "hero" in value ? PhotoSection.hero : "facilities" in value ? PhotoSection.facilities : "testimonials" in value ? PhotoSection.testimonials : "services" in value ? PhotoSection.services : "gallery" in value ? PhotoSection.gallery : value;
+}
+function from_candid_vec_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_PhotoMeta>): Array<PhotoMeta> {
+    return value.map((x)=>from_candid_PhotoMeta_n5(_uploadFile, _downloadFile, x));
+}
+function to_candid_PhotoMetaInput_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PhotoMetaInput): _PhotoMetaInput {
+    return to_candid_record_n2(_uploadFile, _downloadFile, value);
+}
+function to_candid_PhotoSection_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PhotoSection): _PhotoSection {
+    return to_candid_variant_n4(_uploadFile, _downloadFile, value);
+}
+function to_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    displayOrder: bigint;
+    section: PhotoSection;
+    filename: string;
+    storageRef: string;
+}): {
+    displayOrder: bigint;
+    section: _PhotoSection;
+    filename: string;
+    storageRef: string;
+} {
+    return {
+        displayOrder: value.displayOrder,
+        section: to_candid_PhotoSection_n3(_uploadFile, _downloadFile, value.section),
+        filename: value.filename,
+        storageRef: value.storageRef
+    };
+}
+function to_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: PhotoSection): {
+    hero: null;
+} | {
+    facilities: null;
+} | {
+    testimonials: null;
+} | {
+    services: null;
+} | {
+    gallery: null;
+} {
+    return value == PhotoSection.hero ? {
+        hero: null
+    } : value == PhotoSection.facilities ? {
+        facilities: null
+    } : value == PhotoSection.testimonials ? {
+        testimonials: null
+    } : value == PhotoSection.services ? {
+        services: null
+    } : value == PhotoSection.gallery ? {
+        gallery: null
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -1,3 +1,4 @@
+import { getPhotoUrl, useGalleryPhotos } from "@/hooks/useQueries";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -9,7 +10,14 @@ interface GalleryItem {
   category: GalleryCategory;
 }
 
-const GALLERY: GalleryItem[] = [
+type GalleryCategory =
+  | "class-sessions"
+  | "zumba"
+  | "wedding-choreography"
+  | "kids-classes"
+  | "studio";
+
+const STATIC_GALLERY: GalleryItem[] = [
   {
     id: "g1",
     src: "/assets/generated/hero-dance.dim_1920x1080.jpg",
@@ -54,13 +62,6 @@ const GALLERY: GalleryItem[] = [
   },
 ];
 
-type GalleryCategory =
-  | "class-sessions"
-  | "zumba"
-  | "wedding-choreography"
-  | "kids-classes"
-  | "studio";
-
 const CATEGORIES: Array<{ value: "all" | GalleryCategory; label: string }> = [
   { value: "all", label: "All" },
   { value: "class-sessions", label: "Class Sessions" },
@@ -70,12 +71,39 @@ const CATEGORIES: Array<{ value: "all" | GalleryCategory; label: string }> = [
   { value: "studio", label: "Studio" },
 ];
 
+/** Map an uploaded photo filename to a gallery category */
+function inferCategory(filename: string): GalleryCategory {
+  const f = filename.toLowerCase();
+  if (f.includes("zumba")) return "zumba";
+  if (f.includes("wedding") || f.includes("choreograph"))
+    return "wedding-choreography";
+  if (f.includes("kid") || f.includes("child")) return "kids-classes";
+  if (f.includes("studio") || f.includes("interior")) return "studio";
+  return "class-sessions";
+}
+
 export default function GallerySection() {
   const [filter, setFilter] = useState<"all" | GalleryCategory>("all");
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
 
+  const { data: uploadedPhotos, isLoading } = useGalleryPhotos();
+
+  const gallery: GalleryItem[] =
+    uploadedPhotos && uploadedPhotos.length > 0
+      ? uploadedPhotos
+          .slice()
+          .sort((a, b) => Number(a.displayOrder) - Number(b.displayOrder))
+          .map((p) => ({
+            id: String(p.id),
+            src: getPhotoUrl(p.storageRef),
+            alt: p.filename,
+            caption: p.filename.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "),
+            category: inferCategory(p.filename),
+          }))
+      : STATIC_GALLERY;
+
   const filtered =
-    filter === "all" ? GALLERY : GALLERY.filter((g) => g.category === filter);
+    filter === "all" ? gallery : gallery.filter((g) => g.category === filter);
 
   useEffect(() => {
     if (lightboxIdx === null) return;
@@ -166,47 +194,104 @@ export default function GallerySection() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((item, idx) => (
-            <button
-              key={item.id}
-              type="button"
-              className="relative group rounded-xl overflow-hidden transition-smooth cursor-pointer text-left"
-              style={{ aspectRatio: "4/3", border: "1px solid #1f1f1f" }}
-              onClick={() => setLightboxIdx(idx)}
-              aria-label={`View ${item.alt}`}
-              data-ocid="gallery-item"
-            >
-              <img
-                src={item.src}
-                alt={item.alt}
-                className="w-full h-full object-cover transition-smooth group-hover:scale-105"
-              />
+        {/* Loading skeleton */}
+        {isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((n) => (
               <div
-                className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-smooth"
+                key={n}
+                className="rounded-xl animate-pulse"
                 style={{
-                  background:
-                    "linear-gradient(0deg, rgba(10,10,10,0.85) 0%, transparent 60%)",
+                  aspectRatio: "4/3",
+                  background: "#1a1a1a",
+                  border: "1px solid #1f1f1f",
                 }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Empty state — only when backend returns 0 photos (not loading) */}
+        {!isLoading && uploadedPhotos && uploadedPhotos.length === 0 && (
+          <div
+            className="text-center py-20 rounded-2xl"
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid #1f1f1f",
+            }}
+            data-ocid="gallery-empty"
+          >
+            <div className="text-5xl mb-4">📸</div>
+            <p
+              className="text-base font-semibold mb-2"
+              style={{ color: "#ffffff" }}
+            >
+              No photos yet — check back soon!
+            </p>
+            <p className="text-sm" style={{ color: "#a0a0a0" }}>
+              The studio gallery will be updated shortly.
+            </p>
+          </div>
+        )}
+
+        {/* Grid */}
+        {!isLoading && filtered.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filtered.map((item, idx) => (
+              <button
+                key={item.id}
+                type="button"
+                className="relative group rounded-xl overflow-hidden transition-smooth cursor-pointer text-left"
+                style={{ aspectRatio: "4/3", border: "1px solid #1f1f1f" }}
+                onClick={() => setLightboxIdx(idx)}
+                aria-label={`View ${item.alt}`}
+                data-ocid="gallery-item"
               >
-                <p className="text-sm font-medium" style={{ color: "#ffffff" }}>
-                  {item.caption}
-                </p>
-                <span
-                  className="text-xs mt-1 px-2 py-0.5 rounded-full w-fit"
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="w-full h-full object-cover transition-smooth group-hover:scale-105"
+                />
+                <div
+                  className="absolute inset-0 flex flex-col justify-end p-4 opacity-0 group-hover:opacity-100 transition-smooth"
                   style={{
-                    background: "rgba(0,188,212,0.2)",
-                    color: "#00bcd4",
+                    background:
+                      "linear-gradient(0deg, rgba(10,10,10,0.85) 0%, transparent 60%)",
                   }}
                 >
-                  {CATEGORIES.find((c) => c.value === item.category)?.label ??
-                    item.category}
-                </span>
-              </div>
-            </button>
-          ))}
-        </div>
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "#ffffff" }}
+                  >
+                    {item.caption}
+                  </p>
+                  <span
+                    className="text-xs mt-1 px-2 py-0.5 rounded-full w-fit"
+                    style={{
+                      background: "rgba(0,188,212,0.2)",
+                      color: "#00bcd4",
+                    }}
+                  >
+                    {CATEGORIES.find((c) => c.value === item.category)?.label ??
+                      item.category}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* No results for current filter */}
+        {!isLoading && filtered.length === 0 && gallery.length > 0 && (
+          <div
+            className="text-center py-12"
+            data-ocid="gallery-no-filter-results"
+          >
+            <p className="text-sm" style={{ color: "#a0a0a0" }}>
+              No photos in this category yet.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}

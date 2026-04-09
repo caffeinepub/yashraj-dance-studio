@@ -1,22 +1,27 @@
 {
-  "overview": "A visually stunning dark-themed website for Yashraj Dance Studios in Mumbai, featuring aerial sports, aero dance, and performing arts classes with a hero section, gallery, testimonials, and contact form.",
+  "overview": "Yashraj Dance Studio website for Tingre Nagar, Pune — featuring online enquiry form, WhatsApp chat widget, photo gallery with admin upload capabilities, and secure admin panel for managing photos across all site sections.",
   "features": [
-    "Dark hero section with studio logo and call-to-action",
-    "Services showcase for aerial sports, aero dance, and classical dance",
-    "Responsive image and video gallery grid",
-    "Testimonials carousel with 5-star reviews",
-    "Contact form with studio address, phone, and map",
-    "Mobile-friendly responsive navigation"
+    "Online enquiry form with backend storage and WhatsApp notification link",
+    "Floating WhatsApp chat widget with business hours display",
+    "Photo gallery with lightbox viewer and filter tabs",
+    "Admin panel with secure login for photo management",
+    "Photo upload to hero, gallery, services, facilities, and testimonials sections",
+    "Drag-and-drop photo upload with progress indicator",
+    "13 content sections: Hero, About, Services, Testimonials, Gallery, Contact, FAQ, and more",
+    "Dark blue-purple gradient branding throughout"
   ],
-  "category": "showcase",
+  "category": "business",
   "tags": [
     "dance-studio",
-    "performing-arts",
-    "mumbai",
-    "aerial-sports",
-    "aero-dance",
-    "website",
-    "showcase"
+    "fitness",
+    "yoga",
+    "zumba",
+    "wedding-choreography",
+    "pune",
+    "admin-panel",
+    "gallery",
+    "whatsapp",
+    "enquiry-form"
   ],
-  "last_updated": "2026-04-08T19:59:54.625Z"
+  "last_updated": "2026-04-09T07:13:21.618Z"
 }
